@@ -1,0 +1,12 @@
+# pvc.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ebs-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/pv-local"  # caminho do EBS montado

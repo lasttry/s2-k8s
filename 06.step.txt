@@ -1,0 +1,50 @@
+	1.	Criar volume EBS na AWS e associar à EC2.
+	2.	Identificar device (/dev/xvdf, etc.) e formatar/montar.
+	3.	Criar PersistentVolume, PersistentVolumeClaim e Pod:++
+
+  # pvc.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ebs-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"  # caminho do EBS montado
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ebs-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-ebs
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["/bin/sh", "-c", "while true; do echo hello >> /data/out.txt; sleep 10; done"]
+      volumeMounts:
+        - mountPath: "/data"
+          name: ebs-vol
+  volumes:
+    - name: ebs-vol
+      persistentVolumeClaim:
+        claimName: ebs-pvc
+
+Screenshot 5: kubectl exec e ver conteúdo de /data/out.txt após recriar o pod.

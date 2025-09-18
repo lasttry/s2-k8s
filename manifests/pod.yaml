@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-ebs
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["/bin/sh", "-c", "while true; do echo hello >> /data/out.txt; sleep 10; done"]
+      volumeMounts:
+        - mountPath: "/data"
+          name: ebs-vol
+  volumes:
+    - name: ebs-vol
+      persistentVolumeClaim:
+        claimName: ebs-pvc

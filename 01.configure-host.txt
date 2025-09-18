@@ -1,0 +1,46 @@
+sudo blkid /dev/nvme0n1p14
+
+sudo mkfs.ext4 /dev/nvme0n1p14
+sudo mkdir -p /data/pv-local
+sudo chmod 755 /data/pv-local
+
+sudo mount /dev/nvme0n1p14 /data/pv-local
+echo '/dev/nvme0n1p14 /data/pv-local ext4 defaults 0 0' | sudo tee -a /etc/fstab
+
+sudo swapoff -a
+sudo sed -i 's|^\(/swap.img\s\+none\s\+swap\s\+sw\s\+0\s\+0\)|#\1|' /etc/fstab
+
+sudo modprobe overlay
+
+sudo modprobe br_netfilter
+
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo sysctl -w net.bridge.bridge-nf-call-iptables=1
+sudo sysctl -w net.bridge.bridge-nf-call-ip6tables=1
+
+echo -e "overlay\nbr_netfilter" | sudo tee /etc/modules-load.d/k8s.conf
+sudo chmod 644 /etc/modules-load.d/k8s.conf
+
+sudo apt install apt-transport-https ca-certificates curl gnupg lsb-release gpg python3-pip -y
+
+sudo mkdir -p /etc/apt/keyrings
+sudo chmod 0755 /etc/apt/keyrings
+
+sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key -o /etc/apt/keyrings/kubernetes-Release.key
+gpg --dearmor < /etc/apt/keyrings/kubernetes-Release.key | sudo tee /etc/apt/keyrings/kubernetes-apt-keyring.gpg > /dev/null
+sudo chmod 0644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
+
+sudo apt update && sudo apt install -y kubelet kubeadm kubectl containerd
+
+sudo kubectl completion bash > /etc/bash_completion.d/kubectl
+sudo chmod 0644 /etc/bash_completion.d/kubectl
+
+sudo mkdir -p /etc/containerd
+
+containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
+
+sudo sed -i 's/^.*SystemdCgroup = false/        SystemdCgroup = true/' /etc/containerd/config.toml
+
+sudo systemctl enable containerd
+sudo systemctl restart containerd

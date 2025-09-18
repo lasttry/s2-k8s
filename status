@@ -1,0 +1,31 @@
+Documentação (Word)
+
+Criar documento k8s-ec2-lab.docx com:
+	•	Todos os comandos usados (explicados)
+	•	Anexar YAMLs:
+	•	nginx-deployment.yaml
+	•	nginx-service.yaml
+	•	configmap.yaml
+	•	secret.yaml
+	•	pvc.yaml, pv.yaml
+	•	support-team.yaml
+	•	Screenshots com etiquetas
+
+
+k8s-ec2-lab/
+├── README.md
+├── manifests/
+│   ├── nginx-deployment.yaml
+│   ├── nginx-service.yaml
+│   ├── configmap.yaml
+│   ├── secret.yaml
+│   ├── pv.yaml
+│   ├── pvc.yaml
+│   ├── namespace-support.yaml
+├── screenshots/
+│   ├── nodes-ready.png
+│   ├── nginx-browser.png
+│   ├── secret-value.png
+│   ├── support-team-pods.png
+└── doc/
+    └── k8s-ec2-lab.docx

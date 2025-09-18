@@ -1,0 +1,25 @@
+# secret with password
+
+kubectl create secret generic db-pass --from-literal=password=SuperSecret123
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-check
+spec:
+  containers:
+    - name: alpine
+      image: alpine
+      command: ["/bin/sh", "-c", "echo 'Password:' && cat /etc/secret-volume/password && sleep 3600"]
+      volumeMounts:
+        - name: secret-vol
+          mountPath: /etc/secret-volume
+          readOnly: true
+  volumes:
+    - name: secret-vol
+      secret:
+        secretName: db-pass
+EOF
+
+kubectl exec -it secret-check -- cat /etc/secret-volume/password

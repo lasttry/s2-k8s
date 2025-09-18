@@ -1,0 +1,9 @@
+Namespace support-team com workloads
+
+kubectl create namespace support-team
+
+kubectl create deployment nginx-support --image=nginx -n support-team
+
+kubectl get pods -n support-team
+
+Screenshot 6: kubectl get pods -n support-team

@@ -1,0 +1,5 @@
+worker: 44.200.64.250     10.10.9.126
+worker: 18.204.2.52       10.10.50.49
+master: 3.215.190.4       10.10.225.40
+
+sudo apt update && sudo apt upgrade -y && sudo reboot
